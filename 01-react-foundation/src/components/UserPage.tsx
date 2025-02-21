@@ -1,26 +1,11 @@
-import axios from "axios";
-import { useEffect, useState } from "react";
-import type { ReqResUserListResponse, User } from "../interfaces";
+import useUsers from "../hooks/useUsers";
+import { UserRow } from "./UserRow";
 
-const loadUsers = async (): Promise<User[]> => {
-  try {
-    const { data } = await axios.get<ReqResUserListResponse>(
-      "https://reqres.in/api/users");
-    return data.data;
-  } catch (error) {
-    console.log(error);
-    return [];
-  }
-};
 
 export const UserPage = () => {
 
-    const [users, setUsers] = useState([]);
+  const {users,prevPage,nextPage} = useUsers();
 
-  useEffect(() => {
-    loadUsers().
-    then((users) => console.log(users));
-  },[]);
 
   return (
     <>
@@ -34,13 +19,22 @@ export const UserPage = () => {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>avatar</td>
-            <td>nombre</td>
-            <td>email</td>
-          </tr>
+          {
+            users.map((user) => (
+              <UserRow key={user.id} user={user} />
+            ))
+          }
         </tbody>
       </table>
+      <div>
+        <button onClick={() => prevPage()}>Prev</button>
+        <button onClick={() => nextPage()}>Next</button>
+      </div>
+
     </>
   );
 };
+
+
+
+export default UserPage;
